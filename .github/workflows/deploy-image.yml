@@ -43,19 +43,19 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-  publish-docker:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - run: npm ci
-      - run: npm run build
-      - uses: docker/build-push-action@v2
-        with:
-          push: true
-          tags: docker.pkg.github.com/${{ github.repository }}/my-app:latest
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+  # publish-docker:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: actions/setup-node@v3
+  #       with:
+  #         node-version: 16
+  #     - run: npm ci
+  #     - run: npm run build
+  #     - uses: docker/build-push-action@v2
+  #       with:
+  #         push: true
+  #         tags: docker.pkg.github.com/${{ github.repository }}:latest
+  #         username: ${{ github.repository_owner }}
+  #         password: ${{ secrets.GITHUB_TOKEN }}
