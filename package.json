@@ -1,5 +1,5 @@
 {
-  "name": "bootstrap-scraping",
+  "name": "@ulyssear/bootstrap-scraping",
   "version": "0.0.1-test",
   "description": "",
   "main": "index.js",
