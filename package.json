@@ -19,8 +19,7 @@
     "puppeteer": "^19.2.2",
     "puppeteer-extra": "^3.2.3",
     "puppeteer-extra-plugin-stealth": "^2.9.0",
-    "rome": "^10.0.1",
-    "terminal-kit": "^3.0.0"
+    "rome": "^10.0.1"
   },
   "devDependencies": {},
   "homepage": ""

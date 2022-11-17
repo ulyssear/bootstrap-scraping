@@ -4,7 +4,6 @@ const DateHelper = {
 		return new Date().toLocaleString(Intl.DateTimeFormat().resolvedOptions().locale).replace(', ', ' ');
 	},
 };
-// const { terminal } = require('terminal-kit');
 const fs = require('fs');
 const path = require('path');
 const Logger = function (path) {
@@ -34,11 +33,6 @@ const Logger = function (path) {
 	function _generic(color, message) {
 		const date = DateHelper.now();
 		const content = `[${date}] ${message}\n`;
-		// if (color) {
-		// 	terminal[color](content);
-		// } else {
-		// 	terminal(content);
-		// }
 		console.log(content);
 		this.write(content);
 		return true;
