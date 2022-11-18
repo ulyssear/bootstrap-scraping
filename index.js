@@ -57,7 +57,7 @@ const headless = -1 < process.argv.indexOf('--headless');
 
 const logger = new Logger(dirname(require.main.filename));
 
-const run = async function run({ name = 'default', url, callable }) {
+const _run = async function run({ name = 'default', url, callable }) {
 	runningTasks.push(name);
 
 	if (!isLaunching) {
@@ -174,14 +174,33 @@ function writeJSON(path, url, content) {
 	fs.writeFileSync(path, JSON.stringify({ url, date: Date.now(), ...content }));
 	return 0;
 }
+
+function Scrapper() {
+    const tasks = [];
+
+    const addTask = function addTask({ name, url, callable }) {
+        tasks.push({ name, url, callable });
+    };
+
+    const run = async function run() {
+        for (const task of tasks) {
+            await _run(task).bind({
+                $$eval,
+                $eval,
+                writeJSON,
+                logger
+            });
+        }
+    };
+
+    return { addTask, run };
+}
 //--------------------------------------------------------------
 
 // Export modules
 module.exports = {
-	run,
-	Logger,
+	Scrapper,
 	writeJSON,
-	puppeteer,
 	$eval,
 	$$eval,
 };
