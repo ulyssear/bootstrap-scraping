@@ -175,9 +175,7 @@ function writeJSON(path, url, content) {
 	return 0;
 }
 
-Scrapper.prototype = {
-	tasks: [],
-
+const ScraperPrototype = {
 	addTask: function addTask({ name, url, callable }) {
 		this.tasks.push({ name, url, callable });
 	},
@@ -193,8 +191,16 @@ Scrapper.prototype = {
 		}
 	},
 };
+
+function Scraper({ name = 'default', tasks = [] }) {
+	this.tasks = tasks;
+	this.name = name;
+}
+
+Object.assign(Scraper.prototype, ScraperPrototype);
+
 //--------------------------------------------------------------
 
 // Export module
-module.exports = Scrapper;
+module.exports = Scraper;
 //--------------------------------------------------------------
