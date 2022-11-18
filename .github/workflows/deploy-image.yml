@@ -98,7 +98,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: npm ci
       - run: npm config set access public
-      - run: npm publish --tag=${{ steps.package-version.outputs.current-version }}
+      - run: npm publish --tag=latest
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -118,7 +118,7 @@ jobs:
           node-version: 16
           registry-url: https://npm.pkg.github.com/
       - run: npm ci
-      - run: npm publish --tag=${{ steps.package-version.outputs.current-version }}
+      - run: npm publish --tag=latest
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
