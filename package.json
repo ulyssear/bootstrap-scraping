@@ -1,12 +1,12 @@
 {
   "name": "@ulyssear/bootstrap-scraping",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "",
   "main": "index.min.js",
   "scripts": {
     "start": "node app.js --executablePath=\"C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe\"",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "format": "rome format --write --indent-style tab --line-width 160 --quote-style single index.js",
+    "format": "rome format --write --trailing-comma es5 --indent-style space --indent-size 2 --line-width 160 --quote-style single index.js",
     "lint": "rome check index.js",
     "lint:fix": "rome check --apply-suggested index.js",
     "build": "npm run format && npm run lint:fix && esbuild index.js --bundle --outfile=index.min.js --minify --sourcemap --platform=node"
