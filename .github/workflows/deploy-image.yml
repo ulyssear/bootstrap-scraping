@@ -14,6 +14,15 @@ jobs:
           node-version: 16
       - run: npm ci
       - run: npm run build
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Updated build files
+          commit_options: '--no-verify'
+          commit_user_name: github-actions
+          commit_user_email: noreply@arnaud.tech
+          commit_author: github-actions <noreply@arnaud.tech>
+          file_pattern: ./index.min.js ./index.min.js.map
+          skip_dirty_check: true
 
   publish-npm:
     needs: build
