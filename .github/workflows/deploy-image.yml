@@ -25,6 +25,7 @@ jobs:
           node-version: 16
       - run: npm install
       - run: npm run build
+      - run: git config advice.addIgnoredFile false
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Updated build files
