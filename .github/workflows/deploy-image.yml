@@ -25,7 +25,23 @@ jobs:
           node-version: 16
       - run: npm install
       - run: npm run build
-      - run: git config advice.addIgnoredFile false
+      
+      # - run: git config advice.addIgnoredFile false
+
+      - run: rm .gitignore
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_options: '--no-verify'
+          commit_user_name: github-actions
+          commit_user_email: noreply@arnaud.tech
+          commit_author: github-actions <noreply@arnaud.tech>
+          commit_message: "Remove .gitignore"
+          skip_dirty_check: true
+          push_options: '--force'
+          create_branch: true
+          branch: ${{ steps.package-version.outputs.current-version }}
+          file_pattern: ./.gitignore
+
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Updated build files
