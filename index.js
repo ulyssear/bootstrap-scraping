@@ -182,12 +182,12 @@ const ScraperPrototype = {
 
 	run: async function run() {
 		for (const task of this.tasks) {
-			await _run(task).bind({
+			await _run.bind({
 				$$eval,
 				$eval,
 				writeJSON,
 				logger,
-			});
+			})(task);
 		}
 	},
 };
