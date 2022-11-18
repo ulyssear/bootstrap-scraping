@@ -8,7 +8,10 @@ const fs = require('fs');
 const path = require('path');
 const { relative, dirname } = path;
 const Logger = function (_path) {
-  const logsPath = `${relative(__dirname, _path)}\\logs`;
+  const logsPath = `${relative(
+    process.cwd(),
+    path.resolve(__dirname, _path)
+  )}\\logs`;
   if (!fs.existsSync(logsPath)) {
     fs.mkdirSync(logsPath, { recursive: true });
   }
