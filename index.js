@@ -176,22 +176,22 @@ function writeJSON(path, url, content) {
 }
 
 Scrapper.prototype = {
-    tasks: [],
+	tasks: [],
 
-    addTask: function addTask({ name, url, callable }) {
-        this.tasks.push({ name, url, callable });
-    },
+	addTask: function addTask({ name, url, callable }) {
+		this.tasks.push({ name, url, callable });
+	},
 
-    run: async function run() {
-        for (const task of this.tasks) {
-            await _run(task).bind({
-                $$eval,
-                $eval,
-                writeJSON,
-                logger
-            });
-        }
-    },
+	run: async function run() {
+		for (const task of this.tasks) {
+			await _run(task).bind({
+				$$eval,
+				$eval,
+				writeJSON,
+				logger,
+			});
+		}
+	},
 };
 //--------------------------------------------------------------
 
