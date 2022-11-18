@@ -54,7 +54,6 @@ jobs:
           push_options: '--force'
           branch: ${{ steps.package-version.outputs.current-version }}
           create_branch: true
-          tagging_message: v${{ steps.package-version.outputs.current-version }}
 
   publish-github-release:
     needs: build
