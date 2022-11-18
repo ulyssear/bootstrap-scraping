@@ -166,12 +166,18 @@ async function _genericEval(page, name, selector, callback, waitingMessage, argu
 	return element;
 }
 
-function writeJSON(path, url, content) {
-	const pathdir = dirname((path = `${path}.json`));
+function writeJSON(_path, url, content) {
+	const pathdir = path.resolve(
+		this.directory,
+		dirname((_path = `${path}.json`))
+	);
 	if (!fs.existsSync(pathdir)) {
 		fs.mkdirSync(pathdir, { recursive: true });
 	}
-	fs.writeFileSync(path, JSON.stringify({ url, date: Date.now(), ...content }));
+	fs.writeFileSync(
+		path.resolve(pathdir, _path),
+		JSON.stringify({ url, date: Date.now(), ...content })
+	);
 	return 0;
 }
 
@@ -187,9 +193,14 @@ const ScraperPrototype = {
 	},
 };
 
-function Scraper({ name = 'default', tasks = [] }) {
+function Scraper({ 
+	name = 'default', 
+	tasks = [], 
+	directory = path.resolve(__dirname) 
+}) {
 	this.tasks = tasks;
 	this.name = name;
+	this.directory = directory;
 }
 
 Object.assign(Scraper.prototype, ScraperPrototype);
