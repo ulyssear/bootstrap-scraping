@@ -175,15 +175,15 @@ function writeJSON(path, url, content) {
 	return 0;
 }
 
-function Scrapper() {
-    const tasks = [];
+Scrapper.prototype = {
+    tasks: [],
 
-    const addTask = function addTask({ name, url, callable }) {
-        tasks.push({ name, url, callable });
-    };
+    addTask: function addTask({ name, url, callable }) {
+        this.tasks.push({ name, url, callable });
+    },
 
-    const run = async function run() {
-        for (const task of tasks) {
+    run: async function run() {
+        for (const task of this.tasks) {
             await _run(task).bind({
                 $$eval,
                 $eval,
@@ -191,17 +191,10 @@ function Scrapper() {
                 logger
             });
         }
-    };
-
-    return { addTask, run };
-}
+    },
+};
 //--------------------------------------------------------------
 
-// Export modules
-module.exports = {
-	Scrapper,
-	writeJSON,
-	$eval,
-	$$eval,
-};
+// Export module
+module.exports = Scrapper;
 //--------------------------------------------------------------
