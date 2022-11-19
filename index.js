@@ -162,7 +162,13 @@ const _run = async function run({ name = 'default', url, callable }) {
     }
   }, 2000);
 
-  writeJSON(path.resolve(projectPath, 'result', `${name}.json`), url, { data });
+  const dataPath = path.resolve(projectPath, 'data');
+
+  if (!fs.existsSync(dataPath)) {
+    fs.mkdirSync(dataPath, { recursive: true });
+  }
+
+  writeJSON(path.resolve(dataPath, `${name}.json`), url, { data });
 
   return 0;
 };
