@@ -7,21 +7,22 @@ const DateHelper = {
 const fs = require('fs');
 const path = require('path');
 const { relative, dirname } = path;
+
 const Logger = function (_path) {
   const logsPath = `${relative(process.cwd(), path.resolve(__dirname, _path))}\\logs`;
   if (!fs.existsSync(logsPath)) {
     fs.mkdirSync(logsPath, { recursive: true });
   }
 
-  const files = [
-    ['name', 'color'],
-    ['info', null],
-    ['error', 'red'],
-    ['debug', 'blue'],
-    ['success', 'green'],
-  ];
+  const files = {
+    info: null,
+    error: 'red',
+    debug: 'blue',
+    success: 'green',
+  };
 
-  for (const [fileName, color] of files.splice(1)) {
+  for (const fileName in files) {
+    const color = files[fileName];
     const file = fs.createWriteStream(`.\\${logsPath}\\${fileName}.txt`);
     file.on('error', (err) => {
       if (err) {
@@ -174,7 +175,8 @@ function writeJSON(_path, url, content) {
 }
 
 const ScraperPrototype = {
-  _logger: undefined,
+  logger: undefined,
+  directory: undefined,
 
   addTask: function addTask({ name, url, callable }) {
     this.tasks.push({ name, url, callable });
@@ -182,31 +184,19 @@ const ScraperPrototype = {
 
   run: async function run() {
     for (const task of this.tasks) {
-      await _run(
-        Object.apply(
-          {
-            logger: this.logger,
-          },
-          task
-        )
-      );
+      const { name, url, callable } = task;
+      await _run({ name, url, callable, logger: this.logger });
     }
   },
 
   writeJSON,
-
-  get logger() {
-    if (!this._logger) {
-      this._logger = new Logger(this.directory);
-    }
-    return this._logger;
-  },
 };
 
 function Scraper({ name = 'default', tasks = [], directory = path.resolve(__dirname) }) {
   this.tasks = tasks;
   this.name = name;
   this.directory = directory;
+  this.logger = new Logger(this.directory);
 }
 
 Object.assign(Scraper.prototype, ScraperPrototype);
