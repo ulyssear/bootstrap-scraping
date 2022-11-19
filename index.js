@@ -142,17 +142,17 @@ const _run = async function run({ name = 'default', url, callable }) {
     fs.mkdirSync(dataPath, { recursive: true });
   }
 
-  writeJSON(path.resolve(dataPath, name), url, { data });
+  writeJSON(path.resolve(dataPath, name), name, url, { data });
 
   return 0;
 };
 
-function writeJSON(_path, url, content) {
+function writeJSON(_path, name, url, content) {
   const pathdir = path.resolve(this.directory, dirname((_path = `${_path}.json`)));
   if (!fs.existsSync(pathdir)) {
     fs.mkdirSync(pathdir, { recursive: true });
   }
-  fs.writeFileSync(path.resolve(pathdir, _path), JSON.stringify({ url, date: Date.now(), ...content }));
+  fs.writeFileSync(path.resolve(pathdir, _path), JSON.stringify({ name, url, date: Date.now(), ...content }));
   return 0;
 }
 
