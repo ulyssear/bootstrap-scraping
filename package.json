@@ -1,6 +1,6 @@
 {
   "name": "@ulyssear/bootstrap-scraping",
-  "version": "0.1.22",
+  "version": "0.2.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,8 @@
     "format": "rome format --write --trailing-comma es5 --indent-style space --indent-size 2 --line-width 160 --quote-style single index.js",
     "lint": "rome check index.js",
     "lint:fix": "rome check --apply-suggested index.js",
-    "build": "npm run format && npm run lint:fix && esbuild index.js --bundle --outfile=index.min.js --minify --sourcemap --platform=node"
+    "minify": "esbuild index.js --bundle --minify --outfile=index.min.js --sourcemap --platform=node --target=node12 --format=cjs",
+    "build": "npm run format && npm run lint:fix && npm run minify"
   },
   "author": "Ulysse ARNAUD",
   "license": "ISC",

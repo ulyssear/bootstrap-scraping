@@ -45,27 +45,6 @@ const puppeteer = ((puppeteer) => {
   puppeteer.use(require('puppeteer-extra-plugin-stealth')());
   return puppeteer;
 })(require('puppeteer-extra'));
-
-async function $eval({ selector, callback, waitingMessage, argumentsWaitForSelector = [], argumentsEval = [] }) {
-  return _genericEval(this, { name: '$eval', selector, callback, waitingMessage, argumentsWaitForSelector, argumentsEval });
-}
-
-async function $$eval({ selector, callback, waitingMessage, argumentsWaitForSelector = [], argumentsEval = [] }) {
-  return _genericEval(this, { name: '$$eval', selector, callback, waitingMessage, argumentsWaitForSelector, argumentsEval });
-}
-
-async function _genericEval(page, { name, selector, callback, waitingMessage, argumentsWaitForSelector = [], argumentsEval = [] }) {
-  console.log({ waitingMessage });
-  logger.info(waitingMessage ?? `Waiting for element "${selector}"`);
-  let element = undefined;
-  try {
-    await page.waitForSelector(selector, ...argumentsWaitForSelector);
-    element = await page[name](selector, callback, ...argumentsEval);
-  } catch (e) {
-    logger.error(e);
-  }
-  return element;
-}
 //--------------------------------------------------------------
 
 // Core
@@ -101,7 +80,8 @@ const _run = async function run({ name = 'default', url, callable }) {
     if (cursorLimit >= limit) {
       logger.error(`Cannot open page "${url}"`);
       break;
-    }require.main.path
+    }
+    require.main.path;
     try {
       logger.debug('Opening new page');
       page = await browser.newPage();
@@ -118,12 +98,6 @@ const _run = async function run({ name = 'default', url, callable }) {
       }
     }
   }
-
-  $eval = $eval.bind(page);
-  $$eval = $$eval.bind(page);
-
-  page.$eval = $eval;
-  page.$$eval = $$eval;
 
   try {
     data = await callable(page);
@@ -142,7 +116,8 @@ const _run = async function run({ name = 'default', url, callable }) {
       }
 
       try {
-        await page.waitForNavigation({ timeout: timeouts[cursorLimit], waitUntil: 'load' });
+        logger.debug(`Waiting for ${timeouts[cursorLimit]}ms`);
+        await page.waitForTimeout(timeouts[cursorLimit]);
         data = await callable(page);
         break;
       } catch (e) {
