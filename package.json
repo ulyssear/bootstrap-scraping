@@ -1,8 +1,8 @@
 {
   "name": "@ulyssear/bootstrap-scraping",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "description": "",
-  "main": "index.min.js",
+  "main": "index.js",
   "scripts": {
     "start": "node app.js --executablePath=\"C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe\"",
     "test": "echo \"Error: no test specified\" && exit 1",
