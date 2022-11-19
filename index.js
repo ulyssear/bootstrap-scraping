@@ -101,7 +101,7 @@ const _run = async function run({ name = 'default', url, callable }) {
     if (cursorLimit >= limit) {
       logger.error(`Cannot open page "${url}"`);
       break;
-    }
+    }require.main.path
     try {
       logger.debug('Opening new page');
       page = await browser.newPage();
@@ -167,7 +167,7 @@ const _run = async function run({ name = 'default', url, callable }) {
     fs.mkdirSync(dataPath, { recursive: true });
   }
 
-  writeJSON(path.resolve(dataPath, `${name}.json`), url, { data });
+  writeJSON(path.resolve(dataPath, name), url, { data });
 
   return 0;
 };
