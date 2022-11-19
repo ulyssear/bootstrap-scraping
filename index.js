@@ -74,7 +74,8 @@ let browser;
 let isLaunching = false;
 let runningTasks = [];
 
-const projectPath = path.resolve(__dirname, 'result');
+const rootPath = path.resolve(require.main.path);
+const dataPath = path.resolve(rootPath, 'data');
 
 const headless = -1 < process.argv.indexOf('--headless');
 
@@ -161,8 +162,6 @@ const _run = async function run({ name = 'default', url, callable }) {
       await browser.close();
     }
   }, 2000);
-
-  const dataPath = path.resolve(projectPath, 'data');
 
   if (!fs.existsSync(dataPath)) {
     fs.mkdirSync(dataPath, { recursive: true });
