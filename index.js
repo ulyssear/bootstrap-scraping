@@ -172,6 +172,14 @@ const ScraperPrototype = {
       await _run({ name, url, callable });
     }
   },
+
+  runTask: async function runTask(name) {
+    const task = this.tasks.find((task) => task.name === name);
+    if (!task) {
+      throw new Error(`Task "${name}" not found`);
+    }
+    await _run(task);
+  }
 };
 
 function Scraper({ name = 'default', tasks = [], directory = path.resolve(__dirname) }) {
