@@ -1,4 +1,5 @@
 // Bootstrap
+let logger;
 const DateHelper = {
   now() {
     return new Date().toLocaleString(Intl.DateTimeFormat().resolvedOptions().locale).replace(', ', ' ');
@@ -8,8 +9,8 @@ const fs = require('fs');
 const path = require('path');
 const { relative, dirname } = path;
 
-const Logger = function (_path) {
-  const logsPath = `${relative(process.cwd(), path.resolve(__dirname, _path))}\\logs`;
+function Logger(_path) {
+  const logsPath = path.resolve(_path, 'logs');
   if (!fs.existsSync(logsPath)) {
     fs.mkdirSync(logsPath, { recursive: true });
   }
@@ -23,7 +24,7 @@ const Logger = function (_path) {
 
   for (const fileName in files) {
     const color = files[fileName];
-    const file = fs.createWriteStream(`.\\${logsPath}\\${fileName}.txt`);
+    const file = fs.createWriteStream(path.resolve(logsPath, `${fileName}.txt`), { flags: 'a' });
     file.on('error', (err) => {
       if (err) {
         console.error(err);
@@ -36,17 +37,39 @@ const Logger = function (_path) {
     const date = DateHelper.now();
     const content = `[${date}] ${message}`;
     console.log(content);
-    this.write(content);
+    this.write(content + '\n');
     return true;
   }
-};
+}
 const puppeteer = ((puppeteer) => {
   puppeteer.use(require('puppeteer-extra-plugin-stealth')());
   return puppeteer;
 })(require('puppeteer-extra'));
+
+async function $eval({ selector, callback, waitingMessage, argumentsWaitForSelector = [], argumentsEval = [] }) {
+  return _genericEval(this, { name: '$eval', selector, callback, waitingMessage, argumentsWaitForSelector, argumentsEval });
+}
+
+async function $$eval({ selector, callback, waitingMessage, argumentsWaitForSelector = [], argumentsEval = [] }) {
+  return _genericEval(this, { name: '$$eval', selector, callback, waitingMessage, argumentsWaitForSelector, argumentsEval });
+}
+
+async function _genericEval(page, { name, selector, callback, waitingMessage, argumentsWaitForSelector = [], argumentsEval = [] }) {
+  console.log({ waitingMessage });
+  logger.info(waitingMessage ?? `Waiting for element "${selector}"`);
+  let element = undefined;
+  try {
+    await page.waitForSelector(selector, ...argumentsWaitForSelector);
+    element = await page[name](selector, callback, ...argumentsEval);
+  } catch (e) {
+    logger.error(e);
+  }
+  return element;
+}
 //--------------------------------------------------------------
 
 // Core
+let data;
 let browser;
 let isLaunching = false;
 let runningTasks = [];
@@ -55,16 +78,17 @@ const projectPath = path.resolve(__dirname, 'result');
 
 const headless = -1 < process.argv.indexOf('--headless');
 
-const _run = async function run({ name = 'default', url, callable, logger }) {
+const _run = async function run({ name = 'default', url, callable }) {
   let page;
   runningTasks.push(name);
 
   if (!isLaunching) {
+    const executablePath = process.argv.find((arg) => arg.startsWith('--executablePath=')).replace('--executablePath=', '');
     logger.debug('Launching browser');
     browser = await puppeteer.launch({
       headless,
       args: ['--disable-web-security'],
-      executablePath: process.argv.find((arg) => arg.startsWith('--executablePath=')).replace('--executablePath=', ''),
+      executablePath,
     });
     isLaunching = true;
   }
@@ -94,12 +118,11 @@ const _run = async function run({ name = 'default', url, callable, logger }) {
     }
   }
 
-  page.original_$eval = page.$eval;
-  page.original_$$eval = page.$$eval;
-  page.$eval = $eval.bind(page);
-  page.$$eval = $$eval.bind(page);
+  $eval = $eval.bind(page);
+  $$eval = $$eval.bind(page);
 
-  let data;
+  page.$eval = $eval;
+  page.$$eval = $$eval;
 
   try {
     data = await callable(page);
@@ -139,30 +162,10 @@ const _run = async function run({ name = 'default', url, callable, logger }) {
     }
   }, 2000);
 
-  writeJSON(`${projectPath}/result/${name}`, url, { data });
+  writeJSON(path.resolve(projectPath, 'result', `${name}.json`), url, { data });
 
   return 0;
 };
-
-const $eval = async function $eval(selector, callback, waitingMessage, argumentsWaitForSelector = [], argumentsEval = []) {
-  return _genericEval(this, '$eval', selector, callback, waitingMessage, argumentsWaitForSelector, argumentsEval);
-};
-
-const $$eval = async function $$eval(selector, callback, waitingMessage, argumentsWaitForSelector = [], argumentsEval = []) {
-  return _genericEval(this, '$$eval', selector, callback, waitingMessage, argumentsWaitForSelector, argumentsEval);
-};
-
-async function _genericEval(page, name, selector, callback, waitingMessage, argumentsWaitForSelector = [], argumentsEval = []) {
-  logger.info(waitingMessage ?? `Waiting for element "${selector}"`);
-  let element = undefined;
-  try {
-    await page.waitForSelector(selector, ...argumentsWaitForSelector);
-    element = await page[`original_${name}`](selector, callback, ...argumentsEval);
-  } catch (e) {
-    logger.error(e);
-  }
-  return element;
-}
 
 function writeJSON(_path, url, content) {
   const pathdir = path.resolve(this.directory, dirname((_path = `${_path}.json`)));
@@ -186,7 +189,7 @@ const ScraperPrototype = {
   run: async function run() {
     for (const task of this.tasks) {
       const { name, url, callable } = task;
-      await _run({ name, url, callable, logger: this.logger });
+      await _run({ name, url, callable });
     }
   },
 };
@@ -196,6 +199,7 @@ function Scraper({ name = 'default', tasks = [], directory = path.resolve(__dirn
   this.name = name;
   this.directory = directory;
   this.logger = new Logger(this.directory);
+  logger = this.logger;
 }
 
 Object.assign(Scraper.prototype, ScraperPrototype);
