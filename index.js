@@ -8,10 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const { relative, dirname } = path;
 const Logger = function (_path) {
-  const logsPath = `${relative(
-    process.cwd(),
-    path.resolve(__dirname, _path)
-  )}\\logs`;
+  const logsPath = `${relative(process.cwd(), path.resolve(__dirname, _path))}\\logs`;
   if (!fs.existsSync(logsPath)) {
     fs.mkdirSync(logsPath, { recursive: true });
   }
@@ -58,9 +55,7 @@ const projectPath = path.resolve(__dirname, 'result');
 
 const headless = -1 < process.argv.indexOf('--headless');
 
-const logger = new Logger(dirname(require.main.filename));
-
-const _run = async function run({ name = 'default', url, callable }) {
+const _run = async function run({ name = 'default', url, callable, logger }) {
   runningTasks.push(name);
 
   if (!isLaunching) {
@@ -187,7 +182,14 @@ const ScraperPrototype = {
 
   run: async function run() {
     for (const task of this.tasks) {
-      await _run(task);
+      await _run(
+        Object.apply(
+          {
+            logger: this.logger,
+          },
+          task
+        )
+      );
     }
   },
 
