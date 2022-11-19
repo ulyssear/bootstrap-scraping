@@ -70,8 +70,9 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            index.min.js
-            index.min.js.map
+            index.js
+            # index.min.js
+            # index.min.js.map
             package-lock.json
           tag_name: ${{ steps.package-version.outputs.current-version }}
           name: ${{ steps.package-version.outputs.current-version }}
