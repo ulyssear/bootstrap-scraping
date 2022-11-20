@@ -8,24 +8,23 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3c
+
       - name: get-npm-version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@main
         
-      - name: create-new-branch
+      - name: update-index.js
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "New release: ${{ steps.package-version.outputs.current-version }}"
-          branch: ${{ steps.package-version.outputs.current-version }}
-          repository: .
+          commit_message: "Update index.js"
+          branch: "master"
+          file_pattern: "index.js"
+          commit_user_name: "github-actions"
+          commit_user_email: "noreply@arnaud.tech"
+          commit_author: "github-actions <noreply@arnaud.tech>"
+          commit_options: "--no-verify"
 
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - run: npm install
-      - run: npm run build
-      
       # - run: git config advice.addIgnoredFile false
 
       - run: rm .gitignore
@@ -39,7 +38,7 @@ jobs:
           skip_dirty_check: true
           push_options: '--force'
           create_branch: true
-          branch: ${{ steps.package-version.outputs.current-version }}
+          branch: releases/${{ steps.package-version.outputs.current-version }}
           file_pattern: ./.gitignore
 
       - uses: stefanzweifel/git-auto-commit-action@v4
@@ -52,7 +51,7 @@ jobs:
           file_pattern: ./index.min.js ./index.min.js.map ./package-lock.json
           skip_dirty_check: true
           push_options: '--force'
-          branch: ${{ steps.package-version.outputs.current-version }}
+          branch: releases/${{ steps.package-version.outputs.current-version }}
           create_branch: true
 
   publish-github-release:
@@ -65,7 +64,7 @@ jobs:
         uses: martinbeentjes/npm-get-version-action@main
       - uses: actions/checkout@v3
         with:
-          ref: ${{ steps.package-version.outputs.current-version }}
+          ref: releases/${{ steps.package-version.outputs.current-version }}
       - name: create-new-release
         uses: softprops/action-gh-release@v1
         with:
@@ -91,7 +90,7 @@ jobs:
         uses: martinbeentjes/npm-get-version-action@main
       - uses: actions/checkout@v3
         with:
-          ref: ${{ steps.package-version.outputs.current-version }}
+          ref: releases/${{ steps.package-version.outputs.current-version }}
       - uses: actions/setup-node@v3
         with:
           node-version: '16.x'
@@ -112,7 +111,7 @@ jobs:
         uses: martinbeentjes/npm-get-version-action@main
       - uses: actions/checkout@v3
         with:
-          ref: ${{ steps.package-version.outputs.current-version }}
+          ref: releases/${{ steps.package-version.outputs.current-version }}
       - uses: actions/setup-node@v3
         with:
           node-version: 16
