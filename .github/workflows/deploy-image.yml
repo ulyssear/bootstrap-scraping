@@ -30,6 +30,7 @@ jobs:
           commit_user_email: "noreply@arnaud.tech"
           commit_author: "github-actions <noreply@arnaud.tech>"
           commit_options: "--no-verify"
+          push_options: "--force"
 
       # - run: git config advice.addIgnoredFile false
 
