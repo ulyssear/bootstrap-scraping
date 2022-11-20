@@ -7,7 +7,7 @@ const DateHelper = {
 };
 const fs = require('fs');
 const path = require('path');
-const { relative, dirname } = path;
+const { dirname } = path;
 
 function Logger(_path) {
   const logsPath = path.resolve(_path, 'logs');
@@ -58,7 +58,14 @@ const dataPath = path.resolve(rootPath, 'data');
 
 const headless = -1 < process.argv.indexOf('--headless');
 
-const _run = async function run({ name = 'default', url, callable }) {
+const _run = async function run({ name = 'default', url, callable, options = {} }) {
+
+  options = Object.apply({
+    noSave: false,
+  }, options);
+
+  const { noSave } = options;
+
   let page;
   runningTasks.push(name);
 
@@ -67,7 +74,6 @@ const _run = async function run({ name = 'default', url, callable }) {
     logger.debug('Launching browser');
     browser = await puppeteer.launch({
       headless,
-      args: ['--disable-web-security'],
       executablePath,
     });
     isLaunching = true;
@@ -138,11 +144,12 @@ const _run = async function run({ name = 'default', url, callable }) {
     }
   }, 2000);
 
-  if (!fs.existsSync(dataPath)) {
-    fs.mkdirSync(dataPath, { recursive: true });
+  if (!noSave) {
+    if (!fs.existsSync(dataPath)) {
+      fs.mkdirSync(dataPath, { recursive: true });
+    }
+    writeJSON(path.resolve(dataPath, name), name, url, { data });
   }
-
-  writeJSON(path.resolve(dataPath, name), name, url, { data });
 
   return 0;
 };
@@ -162,14 +169,14 @@ const ScraperPrototype = {
 
   writeJSON,
 
-  addTask: function addTask({ name, url, callable }) {
-    this.tasks.push({ name, url, callable });
+  addTask: function addTask({ name, url, callable, options = {} }) {
+    this.tasks.push({ name, url, callable, options });
   },
 
   run: async function run() {
     for (const task of this.tasks) {
-      const { name, url, callable } = task;
-      await _run({ name, url, callable });
+      const { name, url, callable, options } = task;
+      await _run({ name, url, callable, options });
     }
   },
 
