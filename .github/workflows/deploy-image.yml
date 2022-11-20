@@ -13,6 +13,13 @@ jobs:
       - name: get-npm-version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@main
+
+      - name: build
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - run: npm install
+      - run: npm run build
         
       - name: update-index.js
         uses: stefanzweifel/git-auto-commit-action@v4
