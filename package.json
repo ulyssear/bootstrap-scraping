@@ -1,10 +1,10 @@
 {
   "name": "@ulyssear/bootstrap-scraping",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node app.js --executablePath=\"C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe\"",
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "rome format --write --trailing-comma es5 --indent-style space --indent-size 2 --line-width 160 --quote-style single index.js",
     "lint": "rome check index.js",
