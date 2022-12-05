@@ -70,7 +70,8 @@ const _run = async function run({ name = 'default', url, callable, options = {} 
   runningTasks.push(name);
 
   if (!isLaunching) {
-    const executablePath = process.argv.find((arg) => arg.startsWith('--executablePath=')).replace('--executablePath=', '');
+    const executablePath = process.argv.find((arg) => arg.startsWith('--executable_path')).replace('--executable_path=', '');
+    console.log({argv: process.argv, executablePath});
     logger.debug('Launching browser');
     browser = await puppeteer.launch({
       headless,
