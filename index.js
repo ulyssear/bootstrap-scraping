@@ -58,7 +58,7 @@ const dataPath = path.resolve(rootPath, 'data');
 
 const headless = -1 < process.argv.indexOf('--headless');
 
-const _run = async function run({ name = 'default', url, callable, options = {} }) {
+const _run = async function run({ name = 'default', _path: path = 'default', url, callable, options = {} }) {
 
   options = Object.apply({
     noSave: false,
@@ -71,7 +71,6 @@ const _run = async function run({ name = 'default', url, callable, options = {} 
 
   if (!isLaunching) {
     const executablePath = process.argv.find((arg) => arg.startsWith('--executable_path')).replace('--executable_path=', '');
-    console.log({argv: process.argv, executablePath});
     logger.debug('Launching browser');
     browser = await puppeteer.launch({
       headless,
@@ -88,7 +87,6 @@ const _run = async function run({ name = 'default', url, callable, options = {} 
       logger.error(`Cannot open page "${url}"`);
       break;
     }
-    require.main.path;
     try {
       logger.debug('Opening new page');
       page = await browser.newPage();
@@ -149,7 +147,7 @@ const _run = async function run({ name = 'default', url, callable, options = {} 
     if (!fs.existsSync(dataPath)) {
       fs.mkdirSync(dataPath, { recursive: true });
     }
-    writeJSON(path.resolve(dataPath, name), name, url, { data });
+    writeJSON(path.resolve(dataPath, _path), name, url, { data });
   }
 
   return 0;
@@ -170,14 +168,14 @@ const ScraperPrototype = {
 
   writeJSON,
 
-  addTask: function addTask({ name, url, callable, options = {} }) {
-    this.tasks.push({ name, url, callable, options });
+  addTask: function addTask({ name, path: _path, url, callable, options = {} }) {
+    this.tasks.push({ name, _path, url, callable, options });
   },
 
   run: async function run() {
     for (const task of this.tasks) {
-      const { name, url, callable, options } = task;
-      await _run({ name, url, callable, options });
+      const { name, path: _path, url, callable, options } = task;
+      await _run({ name, path: _path, url, callable, options });
     }
   },
 
@@ -190,9 +188,10 @@ const ScraperPrototype = {
   }
 };
 
-function Scraper({ name = 'default', tasks = [], directory = path.resolve(__dirname) }) {
+function Scraper({ name = 'default', path: _path = 'default', tasks = [], directory = path.resolve(__dirname) }) {
   this.tasks = tasks;
   this.name = name;
+  this.path = _path;
   this.directory = directory;
   this.logger = new Logger(this.directory);
   logger = this.logger;
