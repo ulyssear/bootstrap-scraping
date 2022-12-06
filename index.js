@@ -169,7 +169,7 @@ const ScraperPrototype = {
   writeJSON,
 
   addTask: function addTask({ name, path: _path, url, callable, options = {} }) {
-    this.tasks.push({ name, _path, url, callable, options });
+    this.tasks.push({ name, path: _path, url, callable, options });
   },
 
   run: async function run() {
