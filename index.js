@@ -58,7 +58,7 @@ const dataPath = path.resolve(rootPath, 'data');
 
 const headless = -1 < process.argv.indexOf('--headless');
 
-const _run = async function run({ name = 'default', _path: path = 'default', url, callable, options = {} }) {
+const _run = async function run({ name = 'default', path: _path = 'default', url, callable, options = {} }) {
 
   options = Object.apply({
     noSave: false,
